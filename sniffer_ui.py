@@ -64,12 +64,12 @@ class TreeViewFilterWindow(Gtk.Window):
             second = strftime("%S", gmtime())
             minute = int(strftime("%M", gmtime())) - 1
             hour = strftime("%H", gmtime())
-            query += " WHERE time < '" + hour + ":" + str(minute) + ":" + second + "'"
+            query += " WHERE time > '" + hour + ":" + str(minute) + ":" + second + "'"
         elif self.current_filter_time == "Hora":
             second = strftime("%S", gmtime())
             minute = strftime("%M", gmtime())
             hour = int(strftime("%H", gmtime())) - 1
-            query += " WHERE time < '" + str(hour) + ":" + minute + ":" + second + "'"
+            query += " WHERE time > '" + str(hour) + ":" + minute + ":" + second + "'"
 
         # Add amount of connections
         number = cur.execute(query)
