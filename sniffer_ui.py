@@ -26,7 +26,7 @@ class TreeViewFilterWindow(Gtk.Window):
 
         # Adding the headers to the table list.
         self.treeview = Gtk.TreeView.new_with_model(self.timeFilter)
-        for i, column_title in enumerate(["Id", "Direccion MAC", "IP", "Hora"]):
+        for i, column_title in enumerate(["Id", "Identificador", "Direccion MAC", "IP"]):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(column)
@@ -46,6 +46,9 @@ class TreeViewFilterWindow(Gtk.Window):
         for i, button in enumerate(self.buttons[1:]):
             self.grid.attach_next_to(button, self.buttons[i], Gtk.PositionType.RIGHT, 1, 1)
         self.scrollable_treelist.add(self.treeview)
+        self.amount = Gtk.Label("Conexiones: 0")
+        self.grid.attach_next_to(self.amount, self.scrollable_treelist, Gtk.PositionType.BOTTOM, 1, 1)
+
         self.show_all()
 
     def on_selection_button_clicked(self, widget):
@@ -61,14 +64,18 @@ class TreeViewFilterWindow(Gtk.Window):
             second = strftime("%S", gmtime())
             minute = int(strftime("%M", gmtime())) - 1
             hour = strftime("%H", gmtime())
-            query += " WHERE time > '" + hour + ":" + str(minute) + ":" + second + "'"
+            query += " WHERE time < '" + hour + ":" + str(minute) + ":" + second + "'"
         elif self.current_filter_time == "Hora":
             second = strftime("%S", gmtime())
             minute = strftime("%M", gmtime())
             hour = int(strftime("%H", gmtime())) - 1
-            query += " WHERE time > '" + str(hour) + ":" + minute + ":" + second + "'"
-        cur.execute(query)
+            query += " WHERE time < '" + str(hour) + ":" + minute + ":" + second + "'"
 
+        # Add amount of connections
+        number = cur.execute(query)
+        self.amount.set_text("Conexiones: " + str(number))
+
+        # Fetch all addresses
         addresses = cur.fetchall()
         for address in addresses:
             self.address_list_store.append(list(address))
